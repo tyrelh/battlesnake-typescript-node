@@ -1,13 +1,18 @@
 import { CONSOLE_LOG, STATUS, DEBUG } from "./params";
-// import { State } from "./state";
 import { GameRequest } from "./types";
-// import { readFileStr } from 'https://raw.githubusercontent.com/denoland/deno/v1.0.0-rc2/std/fs/read_file_str.ts'
-// import { writeFileStr } from 'https://raw.githubusercontent.com/denoland/deno/v1.0.0-rc2/std/fs/write_file_str.ts'
 import fs from "fs";
+import AWS from "aws-sdk";
+import {
+    AWSIdentityPoolId,
+    battlesnakeLogsKey,
+    battlesnakeLogsBucket
+} from "../data";
 
-
+AWS.config.region = 'us-west-2';
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: AWSIdentityPoolId,
+});
 export const divider = "`\n\n#######################################";
-// const __dirname = new URL('.', import.meta.url).pathname;
 let consoleRed = '\x1b[31m%s\x1b[0m';
 
 // globals for logging across whole game
@@ -102,21 +107,48 @@ export const writeLogs = (gameRequest: GameRequest) => {
     if (errorHappened) {
         log += "\n" + exLog;
     }
+    pushLogsToS3(gameID);
     writeGameLogs(`${path}${gameLogsFilename}`, gameID);
     writeJSONRequests(`${path}${gameJSONFilename}`, gameID);
 }
 
 
+const pushLogsToS3 = (gameID: string) => {
+    const s3 = new AWS.S3({
+      apiVersion: "2006-03-01",
+      params: { Bucket: battlesnakeLogsBucket }
+    });
+
+    const gameLogsParams = {
+        Body: log,
+        Key: `logs/logs-${gameID}.txt`,
+        Bucket: battlesnakeLogsBucket
+    }
+    s3.putObject(gameLogsParams, (err, s3PutData) => {
+      if (err) {
+        console.error(err, err.stack);
+      } else {
+        console.log("Wrote game logs to S3.");
+      }
+    })
+
+    const requestJSONParams = {
+        Body: JSONData,
+        Key: `logs/JSON-${gameID}.txt`,
+        Bucket: battlesnakeLogsBucket
+    }
+    s3.putObject(requestJSONParams, (err, s3PutData) => {
+        if (err) {
+            console.error(err, err.stack);
+        } else {
+            console.log("Wrote requests JSON logs to S3.");
+        }
+    })
+}
+
+
 const writeGameLogs = async (path: string, gameID: string) => {
     try {
-        // await writeFileStr(path, log);
-        // console.log(`The logs for game ${gameID} were saved.`);
-        // const indexFile = await readFileStr(`${__dirname}/../logs/index.html`);
-        // const decoder = new TextDecoder("utf-8");
-        // // const indexText = decoder.decode(indexFile);
-        // const newEntry = `<a href="/logs/${gameID}.txt">GAME: ${gameID}</a><br />`;
-        // const newIndexText = indexFile + "\n" + newEntry;
-        // writeFileStr(`${__dirname}/../logs/index.html`, newIndexText);
         // write log
         fs.writeFile(path, log, (err) => {
             if (err) {
@@ -158,8 +190,6 @@ const writeGameLogs = async (path: string, gameID: string) => {
 
 const writeJSONRequests = (path: string, gameID: string): boolean => {
     try {
-        // console.log(`The JSON requests for game ${gameID} are being saved.`);
-        // writeFileStr(path, JSONData);
         // write JSON log
         fs.writeFile(path, JSONData, (err) => {
             if (err) {
