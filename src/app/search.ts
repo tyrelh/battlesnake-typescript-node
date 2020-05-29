@@ -1,6 +1,6 @@
 import { GameRequest, Cell, Snake } from "./types";
 import * as log from "./logger";
-import { myLocation, isMe } from "./self";
+import {myLocation, isMe, isFriendly} from "./self";
 import { cellToString, applyMoveToCell, getDistance, newCell, calcDirection, applyOffsetToCell } from "./utils";
 import { State } from "./state";
 import { Grid } from "./grid";
@@ -71,8 +71,19 @@ export const huntingScoresForKillZones = (state: State): number[] => {
             }
             return score;
         }
-        const killzones = state.grid.getAll(KILL_ZONE);
-        scores = getScoresForTargets(myLocation(state), killzones, scoringFunction, state);
+        // const killzones = state.grid.getAll(KILL_ZONE);
+        const killZones: Cell[] = [];
+        for (let snake of state.board.snakes) {
+            if (!isMe(snake, state) && !isFriendly(snake)) {
+                for (let move of DIRECTIONS) {
+                    const testCell = applyMoveToCell(move, snake.head);
+                    if (!state.grid.outOfBounds(testCell) && state.grid.value(testCell) === KILL_ZONE) {
+                        killZones.push(testCell);
+                    }
+                }
+            }
+        }
+        scores = getScoresForTargets(myLocation(state), killZones, scoringFunction, state);
     } catch(e) {
         log.error("EX in search.huntingScoresForAccessableKillzones: ", e);
     }
@@ -126,8 +137,19 @@ export const closerToKillableSnakesBias = (state: State): number[] => {
         const scoringFunction = (distance: number, startCell: Cell): number => {
             return (-Math.pow(distance, EXPONENT.KILL_ZONE_DISTANCE))
         }
-        const killzones = state.grid.getAll(KILL_ZONE);
-        scores = getScoresForTargets(myLocation(state), killzones, scoringFunction, state);
+        // const oldKillzones = state.grid.getAll(KILL_ZONE);
+        const killZones: Cell[] = [];
+        for (let snake of state.board.snakes) {
+            if (!isMe(snake, state) && !isFriendly(snake)) {
+                for (let move of DIRECTIONS) {
+                    const testCell = applyMoveToCell(move, snake.head);
+                    if (!state.grid.outOfBounds(testCell) && state.grid.value(testCell) === KILL_ZONE) {
+                        killZones.push(testCell);
+                    }
+                }
+            }
+        }
+        scores = getScoresForTargets(myLocation(state), killZones, scoringFunction, state);
     } catch(e) {
         log.error(`EX in search.closerToKillableSnakesBias: ${e}`);
     }
