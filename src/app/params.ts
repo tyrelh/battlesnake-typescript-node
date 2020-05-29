@@ -24,7 +24,7 @@ export const MY_SNAKE = {
     HEAD_DESIGN: gogglesHead,
     TAIL_DESIGN: boltTail,
     COLOR: purple,
-    FRIENDS: [/zerocool/, /denosnake/],
+    FRIENDS: [/zerocool/, /denosnake/, /crashoverride/],
     API_VERSION: API_VERSION.toString(),
     AUTHOR: "tyrelh"
 };
