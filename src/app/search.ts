@@ -59,7 +59,7 @@ export const eatingScoresFromListOfFood = (foods: Cell[], state: State, urgency:
  * Get move scores for hunting killzones
  * @param state 
  */
-export const huntingScoresForAccessibleKillzones = (state: State): number[] => {
+export const huntingScoresForKillZones = (state: State): number[] => {
     let scores = [0, 0, 0, 0];
     try {
         const scoringFunction = (distance: number, startPosition: Cell): number => {
@@ -84,7 +84,7 @@ export const huntingScoresForAccessibleKillzones = (state: State): number[] => {
  * Get move scores for hunting future2s
  * @param state 
  */
-export const huntingScoresForAccessibleFuture2 = (state: State): number[] => {
+export const huntingScoresForFuture2 = (state: State): number[] => {
     let scores = [0, 0, 0, 0]
     try {
         const scoringFunction = (distance: number, _: Cell): number => {
@@ -93,7 +93,7 @@ export const huntingScoresForAccessibleFuture2 = (state: State): number[] => {
         const future2s = state.grid.getAll(FUTURE_2);
         scores = getScoresForTargets(myLocation(state), future2s, scoringFunction, state);
     } catch(e) {
-        log.error("EX in search.huntingScoresForAccessibleFuture2: ", e);
+        log.error("EX in search.huntingScoresForFuture2: ", e);
     }
     return scores;
 }

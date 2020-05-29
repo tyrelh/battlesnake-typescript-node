@@ -4,7 +4,7 @@ import * as log from "./logger";
 import { applyMoveToCell, cellToString } from "./utils";
 import { baseScoreForCell, scoresToString, combineScores, normalizeScores, highestScoreMove, moveInScores } from "./scores";
 import { myHungerUrgency, isHungerEmergency, existsSnakeSmallerThanMe } from "./self";
-import { distanceFromCellToClosestFoodInFoodList, eatingScoresFromState, eatingScoresFromGrid, huntingScoresForAccessibleKillzones, huntingScoresForAccessibleFuture2, fartherFromWallsBias, fartherFromDangerousSnakesBias, floodBias, closerToTailsBias, tightMoveBias, closerToKillableSnakesBias } from "./search";
+import { distanceFromCellToClosestFoodInFoodList, eatingScoresFromState, eatingScoresFromGrid, huntingScoresForKillZones, huntingScoresForFuture2, fartherFromWallsBias, fartherFromDangerousSnakesBias, floodBias, closerToTailsBias, tightMoveBias, closerToKillableSnakesBias } from "./search";
 
 
 /**
@@ -49,10 +49,10 @@ export const hunt = (state: State, playSafe: boolean = false): number => {
     let scores = [0, 0, 0, 0];
     log.status("HUNTING");
     try {
-        scores = huntingScoresForAccessibleKillzones(state);
+        scores = huntingScoresForKillZones(state);
         if (!moveInScores(scores)) {
             log.status("No accessable killzone found, targeting future 2.")
-            scores = huntingScoresForAccessibleFuture2(state);
+            scores = huntingScoresForFuture2(state);
         }
     } catch (e) {
         log.error(`EX in move.hunt: ${e}`);
@@ -66,9 +66,9 @@ export const lateHunt = (state: State, playSafe: boolean = false): number => {
     log.status("HUNTING, LATE GAME");
     try {
         if (existsSnakeSmallerThanMe(state)) {
-            scores = huntingScoresForAccessibleKillzones(state);
+            scores = huntingScoresForKillZones(state);
         } else {
-            scores = huntingScoresForAccessibleFuture2(state);
+            scores = huntingScoresForFuture2(state);
         }
     } catch (e) {
         log.error(`EX in move.hunt: ${e}`);
