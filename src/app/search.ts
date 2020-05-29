@@ -283,9 +283,9 @@ export const edgeFillFromEnemyToSelf = (enemy: Snake, gridDataCopy: number[][], 
 
 export const getEnemyMoveLocations = (enemy: Snake, state: State): Cell[] => {
     const positions = [];
-    for (let m = 0; m < 4; m++) {
-        if (validMove(m, enemy.head, state)) {
-            positions.push(applyMoveToCell(m, enemy.head));
+    for (let move of DIRECTIONS) {
+        if (validMove(move, enemy.head, state)) {
+            positions.push(applyMoveToCell(move, enemy.head));
         }
     }
     return positions
