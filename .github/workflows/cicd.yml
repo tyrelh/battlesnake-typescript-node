@@ -1,0 +1,65 @@
+name: CI-CD-Pipeline-to-AWS-ElasticBeanstalk
+env:
+  EB_DEPLOY_ARTIFACT_S3_BUCKET: "battlesnake-deploy-artifacts"
+  EB_APPLICATION: "Battlesnake"
+  EB_ENVIRONMENT: "zerocool"
+  DEPLOY_ARTIFACT: "zerocool-${{ github.sha }}.zip"
+  AWS_REGION: "us-west-2"
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone repo
+        uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test
+        env:
+          CI: true
+          BATTLESNAKE_AWS_POOL_ID: ${{ secrets.BATTLESNAKE_AWS_POOL_ID }}
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone repo
+        uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Create zip deployment artifact
+        run: zip -r ${{ env.DEPLOY_ARTIFACT }} build package.json package-lock.json
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Push deploy artifact to S3
+        run: aws s3 cp ${{ env.DEPLOY_ARTIFACT }} s3://${{ env.EB_DEPLOY_ARTIFACT_S3_BUCKET }}/
+
+      - name: Log done
+        run: echo "Finished successfully"
