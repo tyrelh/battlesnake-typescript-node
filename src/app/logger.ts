@@ -2,16 +2,21 @@ import { CONSOLE_LOG, STATUS, DEBUG } from "./params";
 import { GameRequest } from "./types";
 import fs from "fs";
 import AWS from "aws-sdk";
-import {
-    AWSIdentityPoolId,
-    battlesnakeLogsKey,
-    battlesnakeLogsBucket
-} from "../data";
+// import {
+//     AWSIdentityPoolId,
+//     battlesnakeLogsKey,
+//     battlesnakeLogsBucket
+// } from "../data";
 
-AWS.config.region = 'us-west-2';
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: AWSIdentityPoolId,
-});
+const BATTLESNAKE_AWS_POOL_ID = process.env.BATTLESNAKE_AWS_POOL_ID;
+
+if (BATTLESNAKE_AWS_POOL_ID) {
+    AWS.config.region = 'us-west-2';
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: BATTLESNAKE_AWS_POOL_ID,
+    });
+}
+
 export const divider = "`\n\n#######################################";
 let consoleRed = '\x1b[31m%s\x1b[0m';
 
@@ -107,41 +112,50 @@ export const writeLogs = (gameRequest: GameRequest) => {
     if (errorHappened) {
         log += "\n" + exLog;
     }
-    pushLogsToS3(gameID);
+    if (BATTLESNAKE_AWS_POOL_ID) {
+        log += `\nGot ${BATTLESNAKE_AWS_POOL_ID}`
+    }
+
+    pushLogsToS3(gameRequest);
     writeGameLogs(`${path}${gameLogsFilename}`, gameID);
     writeJSONRequests(`${path}${gameJSONFilename}`, gameID);
 }
 
 
-const pushLogsToS3 = (gameID: string) => {
+const pushLogsToS3 = (gameRequest: GameRequest) => {
+    const gameID = gameRequest.game.id;
+    const snakeName = gameRequest.you.name.trim().replace(/\s+/g, "").toLowerCase();
+    const s3Directory = `logs/${snakeName}/`;
     const s3 = new AWS.S3({
       apiVersion: "2006-03-01",
-      params: { Bucket: battlesnakeLogsBucket }
+      params: { Bucket: "battlesnake-logs" }
     });
 
+    const gameLogsKey = `${s3Directory}logs-${gameID}.txt`;
     const gameLogsParams = {
         Body: log,
-        Key: `logs/logs-${gameID}.txt`,
-        Bucket: battlesnakeLogsBucket
+        Key: gameLogsKey,
+        Bucket: "battlesnake-logs"
     }
     s3.putObject(gameLogsParams, (err, s3PutData) => {
       if (err) {
         console.error(err, err.stack);
       } else {
-        console.log("Wrote game logs to S3.");
+        console.log(`Wrote game logs to S3 ${gameLogsKey}`);
       }
     })
 
+    const gameRequestsKey = `${s3Directory}JSON-${gameID}.txt`;
     const requestJSONParams = {
         Body: JSONData,
-        Key: `logs/JSON-${gameID}.txt`,
-        Bucket: battlesnakeLogsBucket
+        Key: gameRequestsKey,
+        Bucket: "battlesnake-logs"
     }
     s3.putObject(requestJSONParams, (err, s3PutData) => {
         if (err) {
             console.error(err, err.stack);
         } else {
-            console.log("Wrote requests JSON logs to S3.");
+            console.log(`Wrote requests JSON logs to S3 ${gameRequestsKey}.`);
         }
     })
 }
