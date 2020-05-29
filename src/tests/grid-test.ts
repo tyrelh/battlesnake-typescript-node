@@ -1,9 +1,9 @@
 import {assert} from "chai";
 import "mocha";
-import {Grid} from "../src/app/grid";
-import {FOOD} from "../src/app/keys";
-import {newCell} from "../src/app/utils";
-import {GameRequest} from "../src/app/types";
+import {Grid} from "../app/grid";
+import {FOOD} from "../app/keys";
+import {newCell} from "../app/utils";
+import {GameRequest} from "../app/types";
 
 
 describe("Grid initGrid and buildGrid", () => {

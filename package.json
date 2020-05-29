@@ -4,7 +4,7 @@
   "description": "Battlesnake AI written in TypeScript and Node",
   "main": "app.js",
   "scripts": {
-    "test": "mocha -r ts-node/register tests/**/*-test.ts",
+    "test": "mocha -r ts-node/register src/tests/**/*-test.ts",
     "start": "node build/app.js",
     "dev": "nodemon src/app.ts",
     "build": "tsc -p ."
