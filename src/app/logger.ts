@@ -2,11 +2,6 @@ import { CONSOLE_LOG, STATUS, DEBUG } from "./params";
 import { GameRequest } from "./types";
 import fs from "fs";
 import AWS from "aws-sdk";
-// import {
-//     AWSIdentityPoolId,
-//     battlesnakeLogsKey,
-//     battlesnakeLogsBucket
-// } from "../data";
 
 const BATTLESNAKE_AWS_POOL_ID = process.env.BATTLESNAKE_AWS_POOL_ID;
 
@@ -111,9 +106,6 @@ export const writeLogs = (gameRequest: GameRequest) => {
     // append game exeptions to end of log for easy viewing
     if (errorHappened) {
         log += "\n" + exLog;
-    }
-    if (BATTLESNAKE_AWS_POOL_ID) {
-        log += `\nGot ${BATTLESNAKE_AWS_POOL_ID}`
     }
 
     pushLogsToS3(gameRequest);
