@@ -92,7 +92,7 @@ jobs:
       - name: Deploy artifact to ElasticBeanstalk
         run: |
           aws elasticbeanstalk update-environment \
-          --environment-name ${{ env.EB_ENVIRONMENT }}
+          --environment-name ${{ env.EB_ENVIRONMENT }} \
           --version-label ${{ env.EB_VERSION }}
 
       - name: Log done
