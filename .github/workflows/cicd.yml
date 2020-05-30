@@ -33,9 +33,6 @@ jobs:
           CI: true
           BATTLESNAKE_AWS_POOL_ID: ${{ secrets.BATTLESNAKE_AWS_POOL_ID }}
 
-      - name: Log done
-        run: echo "Finished successfully"
-
   build:
     runs-on: ubuntu-latest
     needs: [test]
@@ -67,9 +64,6 @@ jobs:
       - name: Push deploy artifact to S3
         run: aws s3 cp ${{ env.DEPLOY_ARTIFACT }} s3://${{ env.EB_DEPLOY_ARTIFACT_S3_BUCKET }}/
 
-      - name: Log done
-        run: echo "Finished successfully"
-
   deploy:
     runs-on: ubuntu-latest
     needs: [build]
@@ -94,6 +88,3 @@ jobs:
           aws elasticbeanstalk update-environment \
           --environment-name ${{ env.EB_ENVIRONMENT }} \
           --version-label ${{ env.EB_VERSION }}
-
-      - name: Log done
-        run: echo "Finished successfully"
