@@ -15,7 +15,8 @@ export interface Snake {
     body: Cell[],
     head: Cell,
     length: number,
-    shout: string
+    shout: string,
+    team?: string
 }
 
 export interface Board {
