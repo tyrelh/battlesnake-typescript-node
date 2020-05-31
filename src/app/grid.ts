@@ -1,6 +1,6 @@
 import { GameRequest, Cell, Snake } from "./types";
 import { WALL_NEAR, FOOD, YOUR_BODY, SMALL_HEAD, SNAKE_BODY, ENEMY_HEAD, TAIL, DANGER, KILL_ZONE, SMALL_DANGER, FUTURE_2, DOWN, GRID_SYMBOLS, SPACE, UP } from "./keys";
-import { newCell, applyOffsetToCell, cellToString } from "./utils";
+import {newCell, applyOffsetToCell, cellToString, sameCell} from "./utils";
 import * as log from "./logger";
 import { Y_DIRECTION, DEBUG_MAPS } from "./params";
 import { isFriendly, isMe, myLocation } from "./self";
@@ -148,19 +148,44 @@ export class Grid {
      * @param state 
      */
     preprocessGrid = (state: State): void => {
-        log.status("Preprocessing grid.")
-        if (this.nearPerimeter(myLocation(state))) {
-            log.debug("I am near perimeter.");
-            const enemySnakes: Snake[] = getEnemySnakes(state);
-            let gridDataCopy = this.copyGridData();
+        log.status("Preprocessing grid.");
+        const team = state.self.team;
+        if (typeof team === "string" && team.length) {
+            this.markTeamMembers(team, state);
+        }
 
-            for (let enemy of enemySnakes) {
-                if (this.onPerimeter(enemy.head)) {
-                    log.debug(`Enemy at ${cellToString(enemy.head)} is on perimeter`);
-                    gridDataCopy = edgeFillFromEnemyToSelf(enemy, gridDataCopy, state);
+        // if (this.nearPerimeter(myLocation(state))) {
+        //     log.debug("I am near perimeter.");
+        //     const enemySnakes: Snake[] = getEnemySnakes(state);
+        //     let gridDataCopy = this.copyGridData();
+        //
+        //     for (let enemy of enemySnakes) {
+        //         if (this.onPerimeter(enemy.head)) {
+        //             log.debug(`Enemy at ${cellToString(enemy.head)} is on perimeter`);
+        //             gridDataCopy = edgeFillFromEnemyToSelf(enemy, gridDataCopy, state);
+        //         }
+        //     }
+        //     this.data = gridDataCopy
+        // }
+    }
+
+
+    /**
+     * Mark body spaces of members of your team as spaces.
+     * @param team
+     * @param state
+     */
+    markTeamMembers = (team: string, state: State): void => {
+        log.status("Team game. Marking team member bodies as spaces.");
+        for (let snake of state.board.snakes) {
+            if (snake.team === team && !isMe(snake, state)) {
+                for (let segment of snake.body) {
+                    if (sameCell(segment, snake.head)) {
+                        continue;
+                    }
+                    this.updateCell(segment, SPACE);
                 }
             }
-            this.data = gridDataCopy
         }
     }
 
