@@ -1,8 +1,8 @@
 # Battlesnake AI using TypeScript and Node
-A Battlesnake AI written in TypeScript.
 
-This snake AI is build using [Node](https://nodejs.org/en/) as a runtime and [Express](https://expressjs.com/) as the server framework.
 ![CI/CD](https://github.com/tyrelh/battlesnake-typescript-node/workflows/CI/CD/badge.svg)
+
+A [Battlesnake AI written in TypeScript using [Node](https://nodejs.org/en/) as a runtime and [Express](https://expressjs.com/) as the server framework.
 
 This project uses [ts-node](https://github.com/TypeStrong/ts-node) for running TypeScript, [Mocha](https://mochajs.org/) for testing, [nodemon](https://nodemon.io/) for development locally, and `tsc` for compiling TypeScript.
 
