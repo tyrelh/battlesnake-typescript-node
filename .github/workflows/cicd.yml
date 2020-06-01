@@ -1,4 +1,4 @@
-name: CI-CD_Pipeline
+name: CI/CD
 env:
   EB_DEPLOY_ARTIFACT_S3_BUCKET: "battlesnake-deploy-artifacts"
   EB_APPLICATION: "Battlesnake"
