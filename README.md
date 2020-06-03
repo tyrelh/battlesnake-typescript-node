@@ -69,4 +69,4 @@ This repo is set up, using Github Actions, for automated deployments to AWS Elas
 ## Contributing
 If you have any questions or suggestions feel free to open an Issue or PR on this repo.
 
-You can find other ways to get in touch with me on my [site](https://tyrelh.github.io).
+You can find other ways to get in touch with me on my [tyrelh.github.io](https://tyrelh.github.io).
