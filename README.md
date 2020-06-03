@@ -63,6 +63,9 @@ npm run test
 
 This script uses *mocha* and *ts-node* to run the TypeScript tests located in *src/tests/*.
 
+## Automated Deploys
+This repo is set up, using Github Actions, for automated deployments to AWS Elastic Beanstalk.
+
 ## Contributing
 If you have any questions or suggestions feel free to open an Issue or PR on this repo.
 
