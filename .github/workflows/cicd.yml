@@ -75,7 +75,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Create new ElasticBeanstalk Application version
+      - name: Deploy to Elastic Beanstalk Application
         run: |
           aws elasticbeanstalk create-application-version \
           --application-name ${{ env.EB_APPLICATION }} \
@@ -83,7 +83,7 @@ jobs:
           --version-label ${{ env.EB_VERSION }} \
           --description ${{ env.EB_DESCRIPTION }}
 
-      - name: Deploy artifact to ElasticBeanstalk
+      - name: Update Environment version
         run: |
           aws elasticbeanstalk update-environment \
           --environment-name ${{ env.EB_ENVIRONMENT }} \
