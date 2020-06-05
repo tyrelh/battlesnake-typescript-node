@@ -7,13 +7,6 @@ const PORT = process.env.PORT || 5000;
 
 
 const handleIndex = (request: Request, response: Response) => {
-    // const battlesnakeInfo = {
-    //     apiversion: '1',
-    //     author: '',
-    //     color: '#888888',
-    //     head: 'default',
-    //     tail: 'default'
-    // }
     response.status(200).json(root());
 };
 
