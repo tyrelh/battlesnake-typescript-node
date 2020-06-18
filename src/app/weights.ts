@@ -26,7 +26,7 @@ export const BASE_MULTIPLIER = {
 export const MULTIPLIER = {
     HUNGER_URGENCY: 0.4,
     TAIL_DISTANCE: 2.0,
-    WALL_DISTANCE: 1.2, // started @ 2.2 -
+    WALL_DISTANCE: 1.1, // started @ 2.2 -
     WALL_NEAR_FILL: -0.5,
     DANGER_FILL: 0.06,
     TIGHT_MOVE: 1.0 // started @ 2.8 --
