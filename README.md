@@ -20,7 +20,7 @@ cd battlesnake-typescript-node
 If you don't have Node installed then install it next.(Example using Brew in MacOS. Refer to the [Node docs](https://nodejs.org/en/download/package-manager/) for other OSs)
 
 ```shell script
-brew install deno
+brew install node
 ```
 
 Now install all the project dependencies with `npm`.
