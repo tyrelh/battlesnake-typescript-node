@@ -33,58 +33,58 @@ jobs:
           CI: true
           BATTLESNAKE_AWS_POOL_ID: ${{ secrets.BATTLESNAKE_AWS_POOL_ID }}
 
-  build:
-    runs-on: ubuntu-latest
-    needs: [test]
-    steps:
-      - name: Git clone repo
-        uses: actions/checkout@v2
+  # build:
+  #   runs-on: ubuntu-latest
+  #   needs: [test]
+  #   steps:
+  #     - name: Git clone repo
+  #       uses: actions/checkout@v2
 
-      - name: Install node
-        uses: actions/setup-node@v1
-        with:
-          node-version: '12.x'
+  #     - name: Install node
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: '12.x'
 
-      - name: Install dependencies
-        run: npm ci
+  #     - name: Install dependencies
+  #       run: npm ci
 
-      - name: Build project
-        run: npm run build
+  #     - name: Build project
+  #       run: npm run build
 
-      - name: Create zip deployment artifact
-        run: zip -r ${{ env.DEPLOY_ARTIFACT }} build package.json package-lock.json
+  #     - name: Create zip deployment artifact
+  #       run: zip -r ${{ env.DEPLOY_ARTIFACT }} build package.json package-lock.json
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+  #         aws-region: ${{ env.AWS_REGION }}
 
-      - name: Push deploy artifact to S3
-        run: aws s3 cp ${{ env.DEPLOY_ARTIFACT }} s3://${{ env.EB_DEPLOY_ARTIFACT_S3_BUCKET }}/
+  #     - name: Push deploy artifact to S3
+  #       run: aws s3 cp ${{ env.DEPLOY_ARTIFACT }} s3://${{ env.EB_DEPLOY_ARTIFACT_S3_BUCKET }}/
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: [build]
+  #   steps:
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+  #         aws-region: ${{ env.AWS_REGION }}
 
-      - name: Deploy to Elastic Beanstalk Application
-        run: |
-          aws elasticbeanstalk create-application-version \
-          --application-name ${{ env.EB_APPLICATION }} \
-          --source-bundle S3Bucket="${{ env.EB_DEPLOY_ARTIFACT_S3_BUCKET }}",S3Key="${{ env.DEPLOY_ARTIFACT }}" \
-          --version-label ${{ env.EB_VERSION }} \
-          --description ${{ env.EB_DESCRIPTION }}
+  #     - name: Deploy to Elastic Beanstalk Application
+  #       run: |
+  #         aws elasticbeanstalk create-application-version \
+  #         --application-name ${{ env.EB_APPLICATION }} \
+  #         --source-bundle S3Bucket="${{ env.EB_DEPLOY_ARTIFACT_S3_BUCKET }}",S3Key="${{ env.DEPLOY_ARTIFACT }}" \
+  #         --version-label ${{ env.EB_VERSION }} \
+  #         --description ${{ env.EB_DESCRIPTION }}
 
-      - name: Update Environment version
-        run: |
-          aws elasticbeanstalk update-environment \
-          --environment-name ${{ env.EB_ENVIRONMENT }} \
-          --version-label ${{ env.EB_VERSION }}
+  #     - name: Update Environment version
+  #       run: |
+  #         aws elasticbeanstalk update-environment \
+  #         --environment-name ${{ env.EB_ENVIRONMENT }} \
+  #         --version-label ${{ env.EB_VERSION }}
