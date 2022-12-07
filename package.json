@@ -14,7 +14,7 @@
   "dependencies": {
     "@types/aws-sdk": "^2.7.0",
     "aws-sdk": "^2.685.0",
-    "express": "^4.17.1"
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
